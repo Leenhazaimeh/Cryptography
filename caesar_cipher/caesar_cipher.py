@@ -1,76 +1,100 @@
 import re
-import string
 import nltk
 from nltk.corpus import words, names
+from nltk.corpus.reader import knbc
 
 nltk.download('words', quiet=True)
 nltk.download('names', quiet=True)
-
-
-
 word_list = words.words()
 name_list = names.words()
 
 
+'''''''''
+Create an encrypt function that takes in a plain text phrase and a numeric shift.
+'''''''''''
 
-def encrypt(plain, key): 
-    encrypted_text = ""
-    plain_len = len(plain)
-    for k in range(plain_len):
-        num = plain[k] 
-        if  not(num.islower() or  num.isupper()):
-            encrypted_text += num
-            continue
-        if num.islower():
-            location = alephbet.index(num.upper()) 
-            new_location = (location + key) % 26 
-            encrypted_text += alephbet[new_location].lower()
+def encrypt(enc, k): 
+    letters = ''
+    # enc_len = len(enc)
+    for T in enc:
+    
+        if T.isupper():
+            num = ord( T ) - ord( 'A' )
+            num_shift = ( num + k ) % 26 + ord( 'A' )
+            new_num = chr( num_shift )
+           
+
+        elif T.islower(): 
+
+            num = ord( T ) - ord( 'a' )
+            num_shift = ( num + k ) % 26 + ord( 'a' )
+            new_num = chr( num_shift )
+            letters +=  new_num
+
+        elif T.isdigit():
+
+            new_numb = ( int( T ) + k ) % 10
+            letters = letters + str( new_numb )
+
         else:
-            location = alephbet.index(num) 
-            new_location = (location + key) % 26 
-            encrypted_text += alephbet[new_location]
 
-    return encrypted_text
+            letters += T
+
+    
+
+    return letters
+
+'''''''''
+Create a decrypt function that takes in encrypted text and numeric shift which will
+'''''''''''
+def decrypt(enc, k):
+    return encrypt(enc, k)
 
 
-def decrypt(encoded, key):
-    return encrypt(encoded, -key+1)
 
-alephbet = string.ascii_uppercase 
-
-def sum_words(text):
-
-    candidate_words = text.split() 
+def sum(T):
     word_sum = 0 
-    for candidate in candidate_words:
-        word = re.sub(r'[^A-Za-z]+','', candidate)
+    words = T.split() 
+    
+    for j in words:
+        word = re.sub(r'[^A-Za-z]+','', j)
         if word.lower() in word_list or word in name_list:
             word_sum += 1
     return word_sum
+'''''''''
+create a crack function that will decode the cipher so that an encrypted message can be transformed into its original state WITHOUT access to the key.
+'''''''''''
+def crack(letters):
+    for i in range (0,26):
+        T = decrypt(letters,i)
+        crack_pers = int(sum(T) / len(letters.split()) * 100)
+        if crack_pers > 50:
+            return T
+'''''''''
+In order to accomplish a certain task you’ll need access to a corpus of English words.
 
-def crack(encrypted):
-    percentage_init = 0
-    for i in range(len(encrypted.split())*26):
-        candidate_dec = decrypt(encrypted, i)
-        word_sum = sum_words(candidate_dec)
-        percentage = int(word_sum / len(candidate_dec.split()) * 100)
-        if percentage > percentage_init:
-            percentage_init = percentage 
-            decrypt_word = candidate_dec
-    return decrypt_word
-
-
+    A search on something like python list of english words should get you going.
+decrypt encrypted version of It was the best of times, it was the worst of times. WITHOUT knowing the shift used.
+'''''''''''
 if __name__ == "__main__":
 
-    input = ['abc','zzz']
+    input = ['leen']
     actual = [encrypt(i,1) for i in input]
-    expected = ['bcd','aaa']
-    print(expected,actual)
+    expected = ['mffo']
+    print(actual)
     actual2 = [decrypt(i,1) for i in input]
+    # print('It was the best of times, it was the worst of times.')
     print(actual2)
+     
 
-    word = 'It was the best of times, it was the worst of times.'
-    encrypted = encrypt(word, 50)
-    print('en',encrypt(word, 50))
+    # word = 'It was the best of times, it was the worst of times.'
+    # letters = encrypt(word, 26)
+    # print(encrypt('casear', 10))
+    # print('Leen',encrypt(word, 100))
 
-    print("the right decrypt is ", crack(encrypted))
+    # print("the right decrypt is ", crack(letters))
+    # word = 'casear'
+    # print = encrypt('casear', 10)
+    # print= decrypt(word, 10)
+    # print  = crack(word)
+    # print('Leen',encrypt(word, 100))
